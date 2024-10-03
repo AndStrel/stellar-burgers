@@ -9,8 +9,9 @@ import {
 } from '../../slices/constructorItemsSlice';
 
 export const BurgerConstructor: FC = () => {
+  // берем состояние из стора
   const dispatch = useDispatch();
-  // получаем данные из стора
+  // извлекаем состояние из стора (ингредиенты и булка)
   const { bun, ingredients } = useSelector((state) => state.constructorItems);
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
 
@@ -37,7 +38,10 @@ export const BurgerConstructor: FC = () => {
   };
 
   // Кнопка "Оформить заказ"
+  // должна быть активна, если в конструкторе есть булка и ингредиенты
+  // при нажатии на нее открывается модальное окно с данными о заказе
   const onOrderClick = () => {
+    console.log('Инфа о заказе', constructorItems);
     if (!constructorItems.bun || orderRequest) return;
   };
 
