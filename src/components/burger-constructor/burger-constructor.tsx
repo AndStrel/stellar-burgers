@@ -2,53 +2,69 @@ import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
+import { clearOrder, sendOrder } from '../../slices/orderSlice';
 import {
-  addIngredient,
-  removeIngredient,
-  setBun
+  clearConstructor,
+  setOrderModalData,
+  setOrderRequest
 } from '../../slices/constructorItemsSlice';
+// import { addOrder } from '../../slices/ordersDataSlice';
 
 export const BurgerConstructor: FC = () => {
   // берем состояние из стора
   const dispatch = useDispatch();
   // извлекаем состояние из стора (ингредиенты и булка)
-  const { bun, ingredients } = useSelector((state) => state.constructorItems);
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
+  const { bun, ingredients, orderRequest, orderModalData } = useSelector(
+    (state) => state.constructorItems
+  );
 
   const constructorItems = {
     bun: bun,
     ingredients: ingredients
   };
-
-  const orderRequest = false;
-
-  const orderModalData = null;
-
-  // Добавление булки в конструктор
-  const addBunToConstructor = (bun: TConstructorIngredient) => {
-    dispatch(setBun(bun));
-  };
-  // Добавление ингредиента в конструктор
-  const addIngredientToConstructor = (ingredient: TConstructorIngredient) => {
-    dispatch(addIngredient(ingredient));
-  };
-  // Удаление ингредиента из конструктора
-  const removeIngredientFromConstructor = (id: number) => {
-    dispatch(removeIngredient(id));
-  };
-
-  // Кнопка "Оформить заказ"
-  // должна быть активна, если в конструкторе есть булка и ингредиенты
-  // при нажатии на нее открывается модальное окно с данными о заказе
-  const onOrderClick = () => {
-    console.log('Инфа о заказе', constructorItems);
+  const onOrderClick = async () => {
+    // если нет булки или заказ уже отправляется, то ничего не делаем
     if (!constructorItems.bun || orderRequest) return;
+
+    // если булка есть и заказ ещё не отправлялся
+    // создаем массив ингредиентов состоящий из ид булки и ид ингредиентов для отправки на сервер
+    const orderIngredients = [
+      constructorItems.bun?._id,
+      ...constructorItems.ingredients.map((ingredient) => ingredient._id)
+    ];
+
+    // устанавливаем состояние загрузки
+    dispatch(setOrderRequest(true));
+
+    // отправляем заказ на сервер
+    try {
+      const response = await dispatch(sendOrder(orderIngredients)).unwrap();
+
+      // устанавливаем состояние модального окна
+      dispatch(setOrderModalData(response));
+
+      // добавляем данные о заказе в стор
+      // dispatch(addOrder(response));
+
+      // очищаем конструктор
+      dispatch(clearConstructor());
+
+      // закрываем модальное окно через 5 секунд
+      setTimeout(() => {
+        closeOrderModal();
+      }, 5000);
+    } catch (error) {
+      console.log('Ошибка при отправке заказа:', error);
+    } finally {
+      // устанавливаем состояние загрузки
+      dispatch(setOrderRequest(false));
+    }
   };
 
   // Закрытие модального окна
   const closeOrderModal = () => {
-    // dispatch(setBun(null));
-    // dispatch(clearConstructor());
+    dispatch(clearOrder()); // сбросить данные заказа
+    dispatch(setOrderModalData(null)); // закрыть модалку
   };
 
   // Подсчет общей стоимости

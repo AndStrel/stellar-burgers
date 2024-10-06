@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   CurrencyIcon,
   FormattedDate
@@ -13,9 +13,9 @@ import { OrderStatus } from '@components';
 export const OrderCardUI: FC<OrderCardUIProps> = memo(
   ({ orderInfo, maxIngredients, locationState }) => (
     <Link
-      to={orderInfo.number.toString()}
+      to={`/feed/${orderInfo.number}`}
       relative='path'
-      state={locationState}
+      state={{ locationState }}
       className={`p-6 mb-4 mr-2 ${styles.order}`}
     >
       <div className={styles.order_info}>

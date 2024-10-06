@@ -1,14 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TConstructorIngredient } from '../utils/types';
+import { TConstructorIngredient, TOrder } from '../utils/types';
 
 interface IConstructorItemsState {
   bun: TConstructorIngredient | null;
   ingredients: TConstructorIngredient[];
+  orderRequest: boolean;
+  orderModalData: TOrder | null;
+  price: number;
 }
 // начальное состояние
 const initialState: IConstructorItemsState = {
   bun: null,
-  ingredients: []
+  ingredients: [],
+  orderRequest: false,
+  orderModalData: null,
+  price: 0
 };
 
 const constructorItemsSlice = createSlice({
@@ -17,7 +23,9 @@ const constructorItemsSlice = createSlice({
   reducers: {
     // редюсер для добавления ингредиента в конструктор
     addIngredient: (state, action: PayloadAction<TConstructorIngredient>) => {
-      state.ingredients.push(action.payload);
+      if (state.ingredients.length < 6) {
+        state.ingredients.push(action.payload);
+      }
     },
     // редюсер для удаления ингредиента из конструктора
     removeIngredient: (state, action: PayloadAction<number>) => {
@@ -27,6 +35,36 @@ const constructorItemsSlice = createSlice({
     setBun: (state, action: PayloadAction<TConstructorIngredient>) => {
       state.bun = action.payload;
     },
+    // редюсер для перемещения ингредиента вниз
+    moveDown: (state, action: PayloadAction<number>) => {
+      const index = action.payload;
+      if (index < state.ingredients.length - 1) {
+        const ingredient = state.ingredients[index];
+        state.ingredients[index] = state.ingredients[index + 1];
+        state.ingredients[index + 1] = ingredient;
+      }
+    },
+    // редюсер для перемещения ингредиента вверх
+    moveUp: (state, action: PayloadAction<number>) => {
+      const index = action.payload;
+      if (index > 0) {
+        const ingredient = state.ingredients[index];
+        state.ingredients[index] = state.ingredients[index - 1];
+        state.ingredients[index - 1] = ingredient;
+      }
+    },
+    // редюсер для установки состояния загрузки заказа в стор (для отображения в модалке)
+    setOrderRequest: (state, action: PayloadAction<boolean>) => {
+      state.orderRequest = action.payload;
+    },
+    // редюсер для установки информации о заказе в стор (для отображения в модалке)
+    setOrderModalData: (state, action: PayloadAction<TOrder | null>) => {
+      state.orderModalData = action.payload;
+    },
+    // редюсер для установки цены
+    setPrice: (state, action: PayloadAction<number>) => {
+      state.price = action.payload;
+    },
     // редюсер для очистки конструктора
     clearConstructor: (state) => {
       state.bun = null;
@@ -35,6 +73,15 @@ const constructorItemsSlice = createSlice({
   }
 });
 
-export const { addIngredient, removeIngredient, setBun, clearConstructor } =
-  constructorItemsSlice.actions;
+export const {
+  addIngredient,
+  removeIngredient,
+  setOrderRequest,
+  setOrderModalData,
+  setPrice,
+  setBun,
+  clearConstructor,
+  moveDown,
+  moveUp
+} = constructorItemsSlice.actions;
 export default constructorItemsSlice.reducer;

@@ -1,46 +1,60 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TOrder, TOrdersData } from '@utils-types';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { TOrder } from '../utils/types';
+import { orderBurgerApi } from '../utils/burger-api';
 
-interface IOrderState {
-  orders: TOrder[];
-  total: number;
-  totalToday: number;
-  isLoading: boolean;
-  error: string | null;
-}
-
-const initialState: IOrderState = {
-  orders: [],
-  total: 0,
-  totalToday: 0,
+// Начальное состояние для заказа
+const initialState = {
+  order: null as TOrder | null,
   isLoading: false,
-  error: null
+  error: null as string | null
 };
 
-export const orderSlice = createSlice({
+// Thunk для отправки заказа на сервер
+export const sendOrder = createAsyncThunk(
+  'order/sendOrder',
+  async (orderIngredients: string[], { rejectWithValue }) => {
+    try {
+      const response = await orderBurgerApi(orderIngredients);
+      return response.order; // Вернуть данные о заказе, если запрос успешен
+    } catch (err) {
+      return rejectWithValue('Ошибка отправки заказа');
+    }
+  }
+);
+
+// Слайс для заказа
+const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    // обработка при загрузке
-    getOrdersRequest: (state) => {
-      state.isLoading = true;
+    // Очистить информацию о заказе
+    clearOrder(state) {
+      state.order = null;
       state.error = null;
-    },
-    // обработка при успешном получении данных
-    getOrdersSuccess: (state, action: PayloadAction<TOrdersData>) => {
-      state.orders = action.payload.orders;
-      state.total = action.payload.total;
-      state.totalToday = action.payload.totalToday;
       state.isLoading = false;
-    },
-    getOrdersFailed: (state, action: PayloadAction<string>) => {
-      state.isLoading = false;
-      state.error = action.payload;
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      // включаем загрузчик при отправке заказа
+      .addCase(sendOrder.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      //при успешной отправке заказа записываем данные
+      //о заказе полученые с сервера в стор
+      .addCase(sendOrder.fulfilled, (state, action: PayloadAction<TOrder>) => {
+        state.isLoading = false;
+        state.order = action.payload;
+      })
+      //при ошибке отправки заказа записываем ошибку в стор
+      .addCase(sendOrder.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   }
 });
 
-export const { getOrdersRequest, getOrdersSuccess, getOrdersFailed } =
-  orderSlice.actions;
-
+// Экспорт действий и редюсера
+export const { clearOrder } = orderSlice.actions;
 export default orderSlice.reducer;

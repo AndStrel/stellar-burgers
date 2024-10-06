@@ -14,15 +14,23 @@ import { OrderInfo } from '../order-info/order-info';
 import { IngredientDetails } from '.././/ingredient-details/ingredient-details';
 import styles from './app.module.css';
 import { AppHeader } from '@components';
+import { useEffect } from 'react';
+import { fetchIngredients } from '../../slices/ingredientsSlice';
+import { useDispatch } from '../../services/store';
 
 export const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const backgroundLocation = location.state?.background || location;
   const closeModal = () => {
     navigate(-1); // назад
   };
+
+  // Получаем список ингредиентов при монтировании компонента
+  useEffect(() => {
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
   return (
     <div className={styles.app}>

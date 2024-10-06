@@ -1,22 +1,38 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useEffect } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchOrderById, fetchOrders } from '../../slices/ordersDataSlice';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  // Инициализируем диспатч из стора
+  const dispatch = useDispatch();
 
-  const ingredients: TIngredient[] = [];
+  // Получаем orderId из URL
+  const { number } = useParams<{ number: string }>();
 
+  // Записываем данные о заказе в переменную
+  const orderData = useSelector((state) =>
+    state.ordersData.orders.find((order) => order.number.toString() === number)
+  );
+  // Записываем список ингредиентов в переменную
+  const ingredients: TIngredient[] = useSelector(
+    (state) => state.ingredients.ingredients
+  );
+  // Записываем состояние загрузки в переменную
+  const isLoading = useSelector((state) => state.order.isLoading);
+
+  // Записываем состояние ошибки в переменную
+  const error = useSelector((state) => state.order.error);
+
+  // Загружаем данные о заказе при их отсутствии
+  useEffect(() => {
+    if (!orderData && number) {
+      dispatch(fetchOrderById(number));
+    }
+  }, [dispatch, orderData, number]);
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
@@ -59,9 +75,9 @@ export const OrderInfo: FC = () => {
     };
   }, [orderData, ingredients]);
 
-  if (!orderInfo) {
-    return <Preloader />;
-  }
+  if (isLoading) return <Preloader />;
+  if (error) return <div>Ошибка загрузки заказа: {error}</div>;
+  if (!orderInfo) return <div>Заказ не найден.</div>;
 
   return <OrderInfoUI orderInfo={orderInfo} />;
 };
