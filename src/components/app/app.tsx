@@ -11,12 +11,14 @@ import { NotFound404 } from '../../pages/not-fount-404/not-fount-404';
 import { ProtectedRoute } from '../../components/protected-route/ProtectedRoute';
 import { Modal } from '../modal/modal';
 import { OrderInfo } from '../order-info/order-info';
-import { IngredientDetails } from '.././/ingredient-details/ingredient-details';
+import { IngredientDetails } from '../../components';
 import styles from './app.module.css';
 import { AppHeader } from '@components';
 import { useEffect } from 'react';
 import { fetchIngredients } from '../../slices/ingredientsSlice';
 import { useDispatch } from '../../services/store';
+import { getCookie } from '../../utils/cookie';
+import { setTokens } from '../../slices/authSlice';
 
 export const App = () => {
   const location = useLocation();
@@ -30,6 +32,11 @@ export const App = () => {
   // Получаем список ингредиентов при монтировании компонента
   useEffect(() => {
     dispatch(fetchIngredients());
+    const refreshToken = localStorage.getItem('refreshToken') as string;
+    const accessToken = getCookie('accessToken') as string;
+    if (refreshToken || accessToken) {
+      dispatch(setTokens({ accessToken, refreshToken }));
+    }
   }, [dispatch]);
 
   return (
@@ -39,38 +46,10 @@ export const App = () => {
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
         <Route path='/feed/:number' element={<OrderInfo />} />
-        <Route
-          path='/login'
-          element={
-            <ProtectedRoute>
-              <Login />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/register'
-          element={
-            <ProtectedRoute>
-              <Register />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/forgot-password'
-          element={
-            <ProtectedRoute>
-              <ForgotPassword />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/reset-password'
-          element={
-            <ProtectedRoute>
-              <ResetPassword />
-            </ProtectedRoute>
-          }
-        />
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
         <Route
           path='/profile'
           element={
