@@ -4,9 +4,8 @@ import { useDispatch, useSelector } from '../../services/store';
 import { updateUser } from '../../slices/authSlice';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
+  // берем из хранилища данные пользователя
   const user = useSelector((store) => store.auth.user);
-  console.log('user', user);
   const dispatch = useDispatch();
 
   const [formValue, setFormValue] = useState({

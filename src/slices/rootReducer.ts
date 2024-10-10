@@ -3,7 +3,7 @@ import ingredientsReducer from '../slices/ingredientsSlice';
 import constructorItemsSlice from '../slices/constructorItemsSlice';
 import orderSlice from './orderSlice';
 import ordersDataSlice from './ordersDataSlice';
-// import userSlice from './userSlice';
+import userOrdersSlice from './userOrdersSlice';
 import authSlice from './authSlice';
 
 const rootReducer = combineReducers({
@@ -11,7 +11,7 @@ const rootReducer = combineReducers({
   constructorItems: constructorItemsSlice,
   ordersData: ordersDataSlice,
   order: orderSlice,
-  // user: userSlice,
+  userOrders: userOrdersSlice,
   auth: authSlice
 });
 

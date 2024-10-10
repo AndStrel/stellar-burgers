@@ -4,7 +4,7 @@ import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
-import { fetchOrderById, fetchOrders } from '../../slices/ordersDataSlice';
+import { fetchOrderById } from '../../slices/ordersDataSlice';
 
 export const OrderInfo: FC = () => {
   // Инициализируем диспатч из стора

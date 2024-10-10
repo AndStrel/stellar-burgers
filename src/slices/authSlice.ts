@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '../utils/types';
-import { updateUserApi } from '../utils/burger-api';
+import { updateUserApi, refreshToken } from '../utils/burger-api';
 
 interface IAuthState {
   user: TUser | null;
@@ -20,7 +20,7 @@ const initialState: IAuthState = {
   isLoading: false
 };
 
-// асинхронные экшены
+// Thunk для обновления данных пользователя
 export const updateUser = createAsyncThunk(
   'auth/updateUser',
   async (
@@ -36,14 +36,33 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+// Thunk для обновления токенов
+export const updateTokens = createAsyncThunk(
+  'auth/updateTokens',
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await refreshToken(); // обновление токена через API
+      const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+        response;
+
+      return response;
+    } catch (error) {
+      return rejectWithValue('Ошибка загрузки ингредиентов');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    // установка данных пользователя
     setUser: (state, action: PayloadAction<TUser>) => {
       state.user = action.payload;
       state.isAuthenticated = true;
+      state.isLoading = false;
     },
+    // установка токенов
     setTokens: (
       state,
       action: PayloadAction<{ accessToken: string; refreshToken: string }>
@@ -53,11 +72,18 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.isLoading = false;
     },
+    // выход из профиля
     logout: (state) => {
       state.user = null;
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
+    },
+    startLoading: (state) => {
+      state.isLoading = true;
+    },
+    stopLoading: (state) => {
+      state.isLoading = false;
     }
   },
   extraReducers: (builder) => {
@@ -80,5 +106,6 @@ const authSlice = createSlice({
   }
 });
 
-export const { setUser, setTokens, logout } = authSlice.actions;
+export const { setUser, setTokens, logout, startLoading, stopLoading } =
+  authSlice.actions;
 export default authSlice.reducer;

@@ -34,7 +34,7 @@ export const Register: FC = () => {
 
       // Перенаправление на страницу логина или профиля
       navigate('/login');
-    } catch (error: any) {
+    } catch (error) {
       // Обработка ошибок
       setErrorText('Ошибка при регистрации. Попробуйте снова.');
       console.error(error);

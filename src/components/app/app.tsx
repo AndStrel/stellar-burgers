@@ -16,28 +16,67 @@ import styles from './app.module.css';
 import { AppHeader } from '@components';
 import { useEffect } from 'react';
 import { fetchIngredients } from '../../slices/ingredientsSlice';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { getCookie } from '../../utils/cookie';
-import { setTokens } from '../../slices/authSlice';
+import {
+  setTokens,
+  setUser,
+  startLoading,
+  stopLoading
+} from '../../slices/authSlice';
+import { getUserApi } from '../../utils/burger-api';
+import { Preloader } from '../ui/preloader/preloader';
 
 export const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const backgroundLocation = location.state?.background || location;
+  const { isLoading } = useSelector((state) => state.auth);
+
+  // Определение фона для модалки
+  const backgroundLocation = location.state?.background || null;
   const closeModal = () => {
-    navigate(-1); // назад
+    navigate(-1); // возвращаемся назад
   };
 
-  // Получаем список ингредиентов при монтировании компонента
+  // ставим useEffect для получения ингредиентов и проверки токенов
   useEffect(() => {
+    // Запускаем загрузку
+    dispatch(startLoading());
+    // Запускаем загрузку ингредиентов
     dispatch(fetchIngredients());
-    const refreshToken = localStorage.getItem('refreshToken') as string;
-    const accessToken = getCookie('accessToken') as string;
+
+    // Достаем актуальные токены которые есть в localStorage
+    const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = getCookie('accessToken');
+
+    // Если есть записанные в localStorage токены,
     if (refreshToken || accessToken) {
-      dispatch(setTokens({ accessToken, refreshToken }));
+      dispatch(
+        setTokens({
+          accessToken: accessToken || '',
+          refreshToken: refreshToken || ''
+        })
+      );
+      //то получаем токены и данные пользователя с сервера
+      getUserApi()
+        .then((res) => {
+          dispatch(setUser(res.user));
+        })
+        .catch((err) => {
+          console.error('Ошибка:', err);
+        })
+        .finally(() => {
+          dispatch(stopLoading());
+        });
+    } else {
+      dispatch(stopLoading());
     }
   }, [dispatch]);
+  // Если данные о заказах не загружены, отображаем прелоадер
+  if (isLoading) {
+    return <Preloader />;
+  }
 
   return (
     <div className={styles.app}>
@@ -46,10 +85,38 @@ export const App = () => {
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
         <Route path='/feed/:number' element={<OrderInfo />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/reset-password' element={<ResetPassword />} />
+        <Route
+          path='/login'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/register'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Register />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/forgot-password'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ForgotPassword />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/reset-password'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ResetPassword />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path='/profile'
           element={
@@ -77,13 +144,21 @@ export const App = () => {
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
         <Route path='*' element={<NotFound404 />} />
       </Routes>
-      {backgroundLocation !== location && (
+      {backgroundLocation && (
         <Routes>
           <Route
             path='/ingredients/:id'
             element={
               <Modal title={'Детали ингредиента'} onClose={closeModal}>
                 <IngredientDetails />
+              </Modal>
+            }
+          />
+          <Route
+            path='/feed/:number'
+            element={
+              <Modal title={'Детали заказа'} onClose={closeModal}>
+                <OrderInfo />
               </Modal>
             }
           />

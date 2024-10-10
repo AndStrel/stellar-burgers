@@ -13,6 +13,14 @@ export const ResetPassword: FC = () => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     setError(null);
+    if (!password) {
+      setError(new Error('Введите пароль'));
+      return;
+    }
+    if (!token) {
+      setError(new Error('Введите токен'));
+      return;
+    }
     resetPasswordApi({ password, token })
       .then(() => {
         localStorage.removeItem('resetPassword');

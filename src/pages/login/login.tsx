@@ -26,12 +26,10 @@ export const Login: FC = () => {
       // Сохраняем токены в cookies и localStorage
       setCookie('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
-      // localStorage.setItem('accessToken', accessToken);
-      // localStorage.setItem('user', JSON.stringify(user));
 
       // Перенаправление на защищенный маршрут профиля
       navigate('/profile');
-    } catch (error: any) {
+    } catch (error) {
       setErrorText('Подумай хорошенько и попробуй ещё раз!');
       console.error('Login error:', error);
     }

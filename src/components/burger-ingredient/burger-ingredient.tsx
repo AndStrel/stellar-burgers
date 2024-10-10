@@ -11,10 +11,12 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
     const location = useLocation();
     const dispatch = useDispatch();
     const handleAdd = () => {
+      // создаем уникальный id из id ингредиента и даты создания
+      const uniqueId = `${ingredient._id}-${Date.now()}`;
       // создаем объект с данными ингредиента и уникальным id (в соответствии с типом ингредиента)
       const ingredientWithId = {
         ...ingredient,
-        id: ingredient._id // Используем _id как уникальный id для конструктора
+        id: uniqueId // Используем _id как уникальный id для конструктора
       };
       // проверяем если это булка то передаем в конструктор в раздел булки
       if (ingredient.type === 'bun') {

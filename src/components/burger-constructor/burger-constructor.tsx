@@ -8,16 +8,18 @@ import {
   setOrderModalData,
   setOrderRequest
 } from '../../slices/constructorItemsSlice';
-// import { addOrder } from '../../slices/ordersDataSlice';
+import { useNavigate } from 'react-router-dom';
+// import { initialState } from '../../slices/authSlice';
 
 export const BurgerConstructor: FC = () => {
   // берем состояние из стора
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // извлекаем состояние из стора (ингредиенты и булка)
   const { bun, ingredients, orderRequest, orderModalData } = useSelector(
     (state) => state.constructorItems
   );
-
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const constructorItems = {
     bun: bun,
     ingredients: ingredients
@@ -26,11 +28,16 @@ export const BurgerConstructor: FC = () => {
     // если нет булки или заказ уже отправляется, то ничего не делаем
     if (!constructorItems.bun || orderRequest) return;
 
-    // если булка есть и заказ ещё не отправлялся
-    // создаем массив ингредиентов состоящий из ид булки и ид ингредиентов для отправки на сервер
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    // создаем массив ингредиентов состоящий из верхней, нижней булки и ингредиентов для отправки на сервер
     const orderIngredients = [
       constructorItems.bun?._id,
-      ...constructorItems.ingredients.map((ingredient) => ingredient._id)
+      ...constructorItems.ingredients.map((ingredient) => ingredient._id),
+      constructorItems.bun?._id
     ];
 
     // устанавливаем состояние загрузки
@@ -43,9 +50,6 @@ export const BurgerConstructor: FC = () => {
       // устанавливаем состояние модального окна
       dispatch(setOrderModalData(response));
 
-      // добавляем данные о заказе в стор
-      // dispatch(addOrder(response));
-
       // очищаем конструктор
       dispatch(clearConstructor());
 
@@ -54,7 +58,7 @@ export const BurgerConstructor: FC = () => {
         closeOrderModal();
       }, 5000);
     } catch (error) {
-      console.log('Ошибка при отправке заказа:', error);
+      console.error('Ошибка при отправке заказа:', error);
     } finally {
       // устанавливаем состояние загрузки
       dispatch(setOrderRequest(false));
