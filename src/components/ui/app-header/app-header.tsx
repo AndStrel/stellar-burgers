@@ -32,9 +32,11 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
           <p className='text text_type_main-default ml-2'>Лента заказов</p>
         </NavLink>
       </div>
-      <div className={styles.logo}>
-        <Logo className='' />
-      </div>
+      <NavLink to='/'>
+        <div className={styles.logo}>
+          <Logo className='' />
+        </div>
+      </NavLink>
       <div>
         <NavLink
           to='/profile'
