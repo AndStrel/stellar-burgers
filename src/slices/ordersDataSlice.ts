@@ -12,24 +12,16 @@ const initialState: TOrdersData = {
 
 export const fetchOrders = createAsyncThunk(
   'ordersData/fetchOrders',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await getFeedsApi();
-      return response;
-    } catch (err) {
-      return rejectWithValue('Ошибка загрузки заказов');
-    }
+  async () => {
+    const response = await getFeedsApi();
+    return response;
   }
 );
 export const fetchOrderById = createAsyncThunk(
   'ordersData/fetchOrderById',
-  async (orderId: string, { rejectWithValue }) => {
-    try {
-      const response = await getOrderByNumberApi(Number(orderId));
-      return response.orders[0]; // Возвращаем один заказ
-    } catch (err) {
-      return rejectWithValue('Ошибка загрузки заказа');
-    }
+  async (orderId: string) => {
+    const response = await getOrderByNumberApi(Number(orderId));
+    return response.orders[0]; // Возвращаем один заказ
   }
 );
 

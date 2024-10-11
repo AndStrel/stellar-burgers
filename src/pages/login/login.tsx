@@ -5,10 +5,13 @@ import { useDispatch } from '../../services/store';
 import { loginUserApi } from '../../utils/burger-api';
 import { setTokens, setUser } from '../../slices/authSlice';
 import { setCookie } from '../../utils/cookie';
+import { useForm } from '../../hooks/useForm';
 
 export const Login: FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { values, handleChange, setValues } = useForm({
+    email: '',
+    password: ''
+  });
   const [errorText, setErrorText] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -16,7 +19,10 @@ export const Login: FC = () => {
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     try {
-      const response = await loginUserApi({ email, password });
+      const response = await loginUserApi({
+        email: values.email,
+        password: values.password
+      });
 
       // Сохраняем токены и данные пользователя в стор
       const { accessToken, refreshToken, user } = response;
@@ -38,10 +44,10 @@ export const Login: FC = () => {
   return (
     <LoginUI
       errorText={errorText}
-      email={email}
-      setEmail={setEmail}
-      password={password}
-      setPassword={setPassword}
+      email={values.email}
+      setEmail={handleChange}
+      password={values.password}
+      setPassword={handleChange}
       handleSubmit={handleSubmit}
     />
   );

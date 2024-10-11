@@ -16,13 +16,9 @@ const initialState: IUserOrdersState = {
 
 export const fetchUserOrders = createAsyncThunk(
   'userOrders/fetchUserOrders',
-  async (_, { rejectWithValue }) => {
-    try {
-      const orders = await getOrdersApi();
-      return orders;
-    } catch (err) {
-      return rejectWithValue('Ошибка загрузки заказов');
-    }
+  async () => {
+    const orders = await getOrdersApi();
+    return orders;
   }
 );
 

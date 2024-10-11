@@ -12,13 +12,9 @@ const initialState = {
 // Thunk для отправки заказа на сервер
 export const sendOrder = createAsyncThunk(
   'order/sendOrder',
-  async (orderIngredients: string[], { rejectWithValue }) => {
-    try {
-      const response = await orderBurgerApi(orderIngredients);
-      return response.order; // Вернуть данные о заказе, если запрос успешен
-    } catch (err) {
-      return rejectWithValue('Ошибка отправки заказа');
-    }
+  async (orderIngredients: string[]) => {
+    const response = await orderBurgerApi(orderIngredients);
+    return response.order; // Вернуть данные о заказе, если запрос успешен
   }
 );
 

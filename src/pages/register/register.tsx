@@ -5,10 +5,13 @@ import { registerUserApi } from '../../utils/burger-api';
 import { setTokens, setUser } from '../../slices/authSlice';
 import { useDispatch } from '../../services/store';
 import { setCookie } from '../../utils/cookie';
+import { useForm } from '../../hooks/useForm';
 export const Register: FC = () => {
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { values, handleChange } = useForm({
+    name: '',
+    email: '',
+    password: ''
+  });
   const [errorText, setErrorText] = useState('');
 
   const navigate = useNavigate();
@@ -19,9 +22,9 @@ export const Register: FC = () => {
     try {
       // Отправка данных на сервер
       const response = await registerUserApi({
-        name: userName,
-        email: email,
-        password: password
+        name: values.name,
+        email: values.email,
+        password: values.password
       });
       // Сохраняем токены и данные пользователя в стор
       const { accessToken, refreshToken, user } = response;
@@ -44,12 +47,12 @@ export const Register: FC = () => {
   return (
     <RegisterUI
       errorText={errorText}
-      email={email}
-      userName={userName}
-      password={password}
-      setEmail={setEmail}
-      setPassword={setPassword}
-      setUserName={setUserName}
+      email={values.email}
+      userName={values.name}
+      password={values.password}
+      setEmail={handleChange}
+      setPassword={handleChange}
+      setUserName={handleChange}
       handleSubmit={handleSubmit}
     />
   );

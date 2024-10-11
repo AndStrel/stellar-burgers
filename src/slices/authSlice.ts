@@ -23,34 +23,20 @@ const initialState: IAuthState = {
 // Thunk для обновления данных пользователя
 export const updateUser = createAsyncThunk(
   'auth/updateUser',
-  async (
-    userData: { name: string; email: string; password: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const user = await updateUserApi(userData);
-      return user;
-    } catch (error) {
-      return rejectWithValue('Ошибка загрузки ингредиентов');
-    }
+  async (userData: { name: string; email: string; password: string }) => {
+    const user = await updateUserApi(userData);
+    return user;
   }
 );
 
 // Thunk для обновления токенов
-export const updateTokens = createAsyncThunk(
-  'auth/updateTokens',
-  async (_, { rejectWithValue, dispatch }) => {
-    try {
-      const response = await refreshToken(); // обновление токена через API
-      const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-        response;
+export const updateTokens = createAsyncThunk('auth/updateTokens', async () => {
+  const response = await refreshToken(); // обновление токена через API
+  const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+    response;
 
-      return response;
-    } catch (error) {
-      return rejectWithValue('Ошибка загрузки ингредиентов');
-    }
-  }
-);
+  return response;
+});
 
 const authSlice = createSlice({
   name: 'auth',
