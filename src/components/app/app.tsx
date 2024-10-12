@@ -162,6 +162,14 @@ export const App = () => {
               </Modal>
             }
           />
+          <Route
+            path='/profile/orders/:number'
+            element={
+              <Modal title={'Детали заказа'} onClose={closeModal}>
+                <OrderInfo />
+              </Modal>
+            }
+          />
         </Routes>
       )}
     </div>
