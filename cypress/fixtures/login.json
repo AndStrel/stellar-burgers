@@ -1,0 +1,9 @@
+{
+    "success": true,
+    "accessToken": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MDQ0ODU1MTNhMmI3MDAxYzhmMDkzMCIsImlhdCI6MTcyOTYxOTkxNSwiZXhwIjoxNzI5NjIxMTE1fQ.K0o5QcXHw38Z6PT9M-Xkaxizg9T7ErjGd006nl0AYy4",
+    "refreshToken": "68eed51d5bcf27cfb8fc009602cccbc5b537c7167211d4099ec5b954eaf00c5292769d566e207585",
+    "user": {
+        "email": "pochta@ya.ru",
+        "name": "Andrey"
+    }
+}
