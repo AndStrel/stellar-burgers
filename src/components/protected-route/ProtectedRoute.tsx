@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from '../../services/store';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Preloader } from '../ui/preloader/preloader';
 import { useEffect } from 'react';
-import { updateTokens } from '../../slices/authSlice';
+import { updateTokens } from '../../slices/auth/authSlice';
 
 type ProtectedRouteProps = {
   onlyUnAuth?: boolean;

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TUser } from '../utils/types';
-import { updateUserApi, refreshToken } from '../utils/burger-api';
+import { TUser } from '../../utils/types';
+import { updateUserApi, refreshToken } from '../../utils/burger-api';
 
 interface IAuthState {
   user: TUser | null;

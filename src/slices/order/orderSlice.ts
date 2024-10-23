@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { TOrder } from '../utils/types';
-import { orderBurgerApi } from '../utils/burger-api';
+import { TOrder } from '../../utils/types';
+import { orderBurgerApi } from '../../utils/burger-api';
 
 // Начальное состояние для заказа
 const initialState = {

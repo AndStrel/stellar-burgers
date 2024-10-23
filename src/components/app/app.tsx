@@ -15,7 +15,7 @@ import { IngredientDetails } from '../../components';
 import styles from './app.module.css';
 import { AppHeader } from '@components';
 import { useEffect } from 'react';
-import { fetchIngredients } from '../../slices/ingredientsSlice';
+import { fetchIngredients } from '../../slices/ingredients/ingredientsSlice';
 import { useDispatch, useSelector } from '../../services/store';
 import { getCookie } from '../../utils/cookie';
 import {
@@ -23,7 +23,7 @@ import {
   setUser,
   startLoading,
   stopLoading
-} from '../../slices/authSlice';
+} from '../../slices/auth/authSlice';
 import { getUserApi } from '../../utils/burger-api';
 import { Preloader } from '../ui/preloader/preloader';
 
