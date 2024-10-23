@@ -9,7 +9,6 @@ import {
   setOrderRequest
 } from '../../slices/constructorItem/constructorItemsSlice';
 import { useNavigate } from 'react-router-dom';
-// import { initialState } from '../../slices/authSlice';
 
 export const BurgerConstructor: FC = () => {
   // берем состояние из стора

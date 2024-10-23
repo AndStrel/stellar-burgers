@@ -2,7 +2,7 @@ import { getOrdersApi } from '../../utils/burger-api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
 
-interface IUserOrdersState {
+export interface IUserOrdersState {
   orders: TOrder[];
   isLoading: boolean;
   error: string | null;
@@ -39,13 +39,10 @@ export const userOrdersSlice = createSlice({
           state.orders = action.payload;
         }
       )
-      .addCase(
-        fetchUserOrders.rejected,
-        (state, action: PayloadAction<any>) => {
-          state.isLoading = false;
-          state.error = action.payload;
-        }
-      );
+      .addCase(fetchUserOrders.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Error';
+      });
   }
 });
 

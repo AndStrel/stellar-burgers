@@ -46,7 +46,7 @@ const orderSlice = createSlice({
       //при ошибке отправки заказа записываем ошибку в стор
       .addCase(sendOrder.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.error.message || 'Error';
       });
   }
 });
