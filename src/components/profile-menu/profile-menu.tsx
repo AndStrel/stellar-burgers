@@ -13,7 +13,6 @@ export const ProfileMenu: FC = () => {
 
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem('refreshToken') as string;
-    console.log(refreshToken);
     if (!refreshToken) {
       console.error('Refresh token is missing');
       return;

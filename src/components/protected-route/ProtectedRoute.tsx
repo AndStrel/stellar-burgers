@@ -22,10 +22,10 @@ export const ProtectedRoute = ({
   // Проверка, если токен истёк — пробуем обновить токен (по refresh токену).
   useEffect(() => {
     const Token = localStorage.getItem('refreshToken');
-    if (!user && Token) {
+    if (!isAuthenticated && Token) {
       dispatch(updateTokens()); // Запрос на обновление токена
     }
-  }, [dispatch, user]);
+  }, [dispatch, isAuthenticated]);
 
   // Если идёт загрузка данных о пользователе, показываем прелоадер
   if (isLoading) {

@@ -1,7 +1,1 @@
-{
-  "success": true,
-  "user": {
-      "email": "pochta@ya.ru",
-      "name": "Andrey"
-  }
-}
+{"success":true,"user":{"email":"p@ya.ru","name":"Andrey"}}

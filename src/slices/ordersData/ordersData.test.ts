@@ -181,7 +181,7 @@ describe('Проверяем корректность работы ordersDataSli
     expect(state.error).toBeNull();
   });
 
-  test('Проверка состояния при успешном запросе заказа по id (fulfilled)', async () => {
+  test('Проверка состояния при успешном запросе заказа по id (fulfilled) -добавляем новый', async () => {
     (getOrderByNumberApi as jest.Mock).mockResolvedValue(testOrdersById);
     // диспатчим экшен получения заказа
     await store.dispatch(fetchOrderById('643d69a5c3f7b9001cfa093c'));
@@ -189,6 +189,23 @@ describe('Проверяем корректность работы ordersDataSli
     const state = store.getState();
     // проверяем все поля переданного объекта с ожидаемым
     expect(state.orders).toEqual(testOrdersById.orders);
+    expect(state.error).toBeNull();
+  });
+
+  test('Проверка состояния при успешном запросе заказа по id (fulfilled) -обновляем', async () => {
+    (getOrderByNumberApi as jest.Mock).mockResolvedValue(testOrdersById);
+    // обновляем хранилище
+    const store = configureStore({ reducer: ordersDataSlice });
+    // получаем заказ
+    await store.dispatch(fetchOrderById('643d69a5c3f7b9001cfa093c'));
+    // получаем тот же самый заказ
+    await store.dispatch(fetchOrderById('643d69a5c3f7b9001cfa093c'));
+    // получаем состояние хранилища
+    const state = store.getState();
+
+    // Проверяем, что заказ был обновлен
+    expect(state.orders.length).toBe(1); // Заказ остался один
+    expect(state.orders[0]).toEqual(testOrdersById.orders[0]);
     expect(state.error).toBeNull();
   });
 

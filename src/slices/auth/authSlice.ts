@@ -1,6 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '../../utils/types';
-import { updateUserApi, refreshToken } from '../../utils/burger-api';
+import {
+  updateUserApi,
+  refreshToken,
+  getUserApi
+} from '../../utils/burger-api';
 
 interface IAuthState {
   user: TUser | null;
@@ -32,9 +36,11 @@ export const updateUser = createAsyncThunk(
 // Thunk для обновления токенов
 export const updateTokens = createAsyncThunk('auth/updateTokens', async () => {
   const response = await refreshToken(); // обновление токена через API
-  const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-    response;
+  return response;
+});
 
+export const getUser = createAsyncThunk('auth/getUser', async () => {
+  const response = await getUserApi();
   return response;
 });
 
@@ -86,6 +92,42 @@ const authSlice = createSlice({
     });
     // обработка при ошибке
     builder.addCase(updateUser.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.error.message || 'Error';
+    });
+
+    builder.addCase(updateTokens.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+    // обработка при успешном получении данных
+    builder.addCase(updateTokens.fulfilled, (state, action) => {
+      state.accessToken = action.payload?.accessToken;
+      state.refreshToken = action.payload?.refreshToken;
+      state.isAuthenticated = true;
+      state.isLoading = false;
+    });
+    // обработка при ошибке
+    builder.addCase(updateTokens.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.error.message || 'Error';
+    });
+
+    // обработка при отправке запроса
+    builder.addCase(getUser.pending, (state) => {
+      state.isLoading = true;
+      state.error = null;
+    });
+
+    // обработка при успешном получении данных
+    builder.addCase(getUser.fulfilled, (state, action) => {
+      state.user = action.payload?.user;
+      state.isAuthenticated = true;
+      state.isLoading = false;
+    });
+    // обработка при ошибке
+    builder.addCase(getUser.rejected, (state, action) => {
+      state.isAuthenticated = false;
       state.isLoading = false;
       state.error = action.error.message || 'Error';
     });
