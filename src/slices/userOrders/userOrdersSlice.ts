@@ -8,7 +8,7 @@ export interface IUserOrdersState {
   error: string | null;
 }
 
-const initialState: IUserOrdersState = {
+export const initialState: IUserOrdersState = {
   orders: [],
   isLoading: true,
   error: null

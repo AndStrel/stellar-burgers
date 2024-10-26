@@ -3,7 +3,7 @@ import { TOrder } from '../../utils/types';
 import { orderBurgerApi } from '../../utils/burger-api';
 
 // Начальное состояние для заказа
-const initialState = {
+export const initialState = {
   order: null as TOrder | null,
   isLoading: false,
   error: null as string | null

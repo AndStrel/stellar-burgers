@@ -1,13 +1,17 @@
 import { expect, test, describe } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
-import ingredientsSlice, { fetchIngredients } from './ingredientsSlice';
+import ingredientsSlice, {
+  fetchIngredients,
+  initialState
+} from './ingredientsSlice';
 import { TIngredient } from '../../utils/types';
 import { getIngredientsApi } from '../../utils/burger-api';
+// import { initialState } from './ingredientsSlice';
 
 jest.mock('../../utils/burger-api');
 
 describe('Проверяем корректность работы ingredientsSlice.', () => {
-  const testIngredients: TIngredient[] = [
+  const mockIngredients: TIngredient[] = [
     {
       _id: '643d69a5c3f7b9001cfa093e',
       name: 'Пробный ништяк',
@@ -49,38 +53,41 @@ describe('Проверяем корректность работы ingredientsSl
   });
 
   test('Проверка состояния при запросе ингредиентов (pending)', () => {
-    // диспатчим экшен получения ингредиентов
-    store.dispatch(fetchIngredients());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.ingredients).toEqual([]);
-    expect(state.isLoading).toBe(true);
-    expect(state.error).toBeNull();
+    const actualState = ingredientsSlice(
+      initialState,
+      fetchIngredients.pending('')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isLoading: true,
+      error: null
+    });
   });
 
   test('Проверка состояния при успешном получении ингредиентов (fulfilled)', async () => {
-    (getIngredientsApi as jest.Mock).mockResolvedValue(testIngredients);
-    // диспатчим экшен получения ингредиентов
-    await store.dispatch(fetchIngredients());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.isLoading).toBe(false);
-    expect(state.error).toBeNull();
-    expect(state.ingredients).toEqual(testIngredients);
+    (getIngredientsApi as jest.Mock).mockResolvedValue(mockIngredients);
+    const actualState = ingredientsSlice(
+      initialState,
+      fetchIngredients.fulfilled(mockIngredients, '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      ingredients: mockIngredients,
+      isLoading: false,
+      error: null
+    });
   });
-
-  test('Проверка состояния при ошибке при получении ингредиентов (rejected)', async () => {
-    (getIngredientsApi as jest.Mock).mockRejectedValue(testError);
-    const store = configureStore({ reducer: ingredientsSlice });
-    // диспатчим экшен получения ингредиентов
-    await store.dispatch(fetchIngredients());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.isLoading).toBe(false);
-    expect(state.error).toEqual(testError);
-    expect(state.ingredients).toEqual([]);
+  test('Проверка состояния при возврате ошибки (rejected)', () => {
+    (getIngredientsApi as jest.Mock).mockResolvedValue(mockIngredients);
+    const actualState = ingredientsSlice(
+      initialState,
+      fetchIngredients.rejected(new Error(testError), '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      ingredients: [],
+      isLoading: false,
+      error: testError
+    });
   });
 });

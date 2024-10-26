@@ -15,7 +15,7 @@ interface IAuthState {
   isLoading: boolean;
 }
 
-const initialState: IAuthState = {
+export const initialState: IAuthState = {
   user: null,
   accessToken: null,
   refreshToken: null,

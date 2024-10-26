@@ -2,7 +2,7 @@ import { getFeedsApi, getOrderByNumberApi } from '../../utils/burger-api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder, TOrdersData } from '@utils-types';
 
-const initialState: TOrdersData = {
+export const initialState: TOrdersData = {
   orders: [],
   total: 0,
   totalToday: 0,

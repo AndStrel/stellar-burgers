@@ -9,7 +9,7 @@ interface IConstructorItemsState {
   price: number;
 }
 // начальное состояние
-const initialState: IConstructorItemsState = {
+export const initialState: IConstructorItemsState = {
   bun: null,
   ingredients: [],
   orderRequest: false,
