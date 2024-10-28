@@ -79,7 +79,7 @@ type TIngredientsResponse = TServerResponse<{
   data: TIngredient[];
 }>;
 
-type TFeedsResponse = TServerResponse<{
+export type TFeedsResponse = TServerResponse<{
   orders: TOrder[];
   total: number;
   totalToday: number;
@@ -193,7 +193,7 @@ export const resetPasswordApi = (data: { password: string; token: string }) =>
     body: JSON.stringify(data)
   }).then((data) => data);
 
-type TUserResponse = TServerResponse<{ user: TUser }>;
+export type TUserResponse = TServerResponse<{ user: TUser }>;
 
 // запрос на обновление данных пользователя по токену
 export const getUserApi = () =>

@@ -1,6 +1,9 @@
 import { expect, test, describe } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
-import userOrdersSlice, { fetchUserOrders } from './userOrdersSlice';
+import userOrdersSlice, {
+  fetchUserOrders,
+  initialState
+} from './userOrdersSlice';
 import { getOrdersApi } from '../../utils/burger-api';
 
 jest.mock('../../utils/burger-api');
@@ -69,41 +72,45 @@ describe('Проверяем корректность работы userOrdersSli
   });
 
   test('Проверка состояния при запросе заказов (pending)', () => {
-    // диспатчим экшен получения заказов
-    store.dispatch(fetchUserOrders());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.orders).toEqual([]);
-    expect(state.isLoading).toBe(true);
-    expect(state.error).toBeNull();
+    const actualState = userOrdersSlice(
+      initialState,
+      fetchUserOrders.pending('')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isLoading: true,
+      error: null
+    });
   });
 
   test('Проверка состояния при успешном запросе заказов (fulfilled)', async () => {
     (getOrdersApi as jest.Mock).mockResolvedValue({
       orders: testOrders.orders
     });
-    // диспатчим экшен получения заказов
-    await store.dispatch(fetchUserOrders());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.orders).toEqual({ orders: testOrders.orders });
-    expect(state.isLoading).toBe(false);
-    expect(state.error).toBeNull();
+    const actualState = userOrdersSlice(
+      initialState,
+      fetchUserOrders.fulfilled(testOrders.orders, '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      orders: testOrders.orders,
+      isLoading: false,
+      error: null
+    });
   });
 
   test('Проверка состояния при ошибке при запросе заказов (rejected)', async () => {
-    (getOrdersApi as jest.Mock).mockRejectedValue(testError);
-    // обновляем хранилище
-    const store = configureStore({ reducer: userOrdersSlice });
-    // диспатчим экшен получения заказов
-    await store.dispatch(fetchUserOrders());
-    // получаем состояние хранилища
-    const state = store.getState();
-    expect(state.orders).toEqual([]);
-    expect(state.isLoading).toBe(false);
-    // проверяем что в хранилище записана ошибка
-    expect(state.error).toEqual(testError);
+    (getOrdersApi as jest.Mock).mockResolvedValue({
+      orders: testOrders.orders
+    });
+    const actualState = userOrdersSlice(
+      initialState,
+      fetchUserOrders.rejected(new Error(testError), '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isLoading: false,
+      error: testError
+    });
   });
 });

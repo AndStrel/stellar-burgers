@@ -102,8 +102,8 @@ const authSlice = createSlice({
     });
     // обработка при успешном получении данных
     builder.addCase(updateTokens.fulfilled, (state, action) => {
-      state.accessToken = action.payload?.accessToken;
-      state.refreshToken = action.payload?.refreshToken;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
       state.isAuthenticated = true;
       state.isLoading = false;
     });

@@ -6,7 +6,6 @@ import ingredientsSlice, {
 } from './ingredientsSlice';
 import { TIngredient } from '../../utils/types';
 import { getIngredientsApi } from '../../utils/burger-api';
-// import { initialState } from './ingredientsSlice';
 
 jest.mock('../../utils/burger-api');
 

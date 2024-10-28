@@ -1,6 +1,7 @@
 import { expect, test, describe } from '@jest/globals';
 import { configureStore } from '@reduxjs/toolkit';
 import authSlice, {
+  initialState,
   updateUser,
   updateTokens,
   setUser,
@@ -16,7 +17,8 @@ import {
   TRegisterData,
   TAuthResponse,
   TRefreshResponse,
-  getUserApi
+  getUserApi,
+  TUserResponse
 } from '../../utils/burger-api';
 
 jest.mock('../../utils/burger-api');
@@ -32,7 +34,13 @@ describe('Проверяем корректность работы authSlice.', 
     accessToken: 'testAccessToken',
     refreshToken: 'testRefreshToken'
   };
-
+  const testUserResponse: TUserResponse = {
+    success: true,
+    user: {
+      name: 'testName',
+      email: 'test@test.com'
+    }
+  };
   const testAuthResponse: TAuthResponse = {
     success: true,
     refreshToken: 'testRefreshToken',
@@ -71,131 +79,127 @@ describe('Проверяем корректность работы authSlice.', 
   });
 
   test('Проверка состояния при вызове updateUser (pending)', () => {
-    // диспатчим экшен получения пользователя
-    store.dispatch(updateUser(testUserData));
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toBeNull();
-    expect(state.accessToken).toBeNull();
-    expect(state.refreshToken).toBeNull();
-    expect(state.isAuthenticated).toBe(false);
-    expect(state.error).toBeNull();
-    expect(state.isLoading).toBe(true);
+    const actualState = authSlice(
+      initialState,
+      updateUser.pending('', testUserData)
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isLoading: true,
+      error: null
+    });
   });
 
   test('Проверка состояния при вызове updateUser (fulfilled)', async () => {
     (updateUserApi as jest.Mock).mockResolvedValue(testAuthResponse);
-    // диспатчим экшен получения пользователя
-    await store.dispatch(updateUser(testUserData));
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toEqual(testAuthResponse.user);
-    expect(state.accessToken).toBeNull();
-    expect(state.refreshToken).toBeNull();
-    expect(state.isAuthenticated).toBe(true);
-    expect(state.error).toBeNull();
-    expect(state.isLoading).toBe(false);
+    const actualState = authSlice(
+      initialState,
+      updateUser.fulfilled(testUserResponse, '', testUserData)
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      user: testUserResponse.user,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null
+    });
   });
 
   test('Проверка состояния при вызове updateUser (rejected) и получении ошибки', async () => {
     (updateUserApi as jest.Mock).mockRejectedValue(testError);
-    // диспатчим экшен получения пользователя
-    await store.dispatch(updateUser(testUserData));
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toBeNull();
-    expect(state.accessToken).toBeNull();
-    expect(state.refreshToken).toBeNull();
-    expect(state.isAuthenticated).toBe(false);
-    expect(state.error).toBe(testError);
-    expect(state.isLoading).toBe(false);
+    (updateUserApi as jest.Mock).mockResolvedValue(testAuthResponse);
+    const actualState = authSlice(
+      initialState,
+      updateUser.rejected(new Error(testError), '', testUserData)
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: testError
+    });
   });
 
   test('Проверка состояния при вызове updateTokens (pending)', () => {
-    // диспатчим экшен получения токенов
-    store.dispatch(updateTokens());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toBeNull();
-    expect(state.accessToken).toBeNull();
-    expect(state.refreshToken).toBeNull();
-    expect(state.isAuthenticated).toBe(false);
-    expect(state.error).toBeNull();
-    expect(state.isLoading).toBe(true);
+    const actualState = authSlice(
+      initialState,
+      updateUser.pending('', testUserData)
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isLoading: true,
+      error: null
+    });
   });
 
   test('Проверка состояния при вызове updateTokens (fulfilled)', async () => {
     (refreshToken as jest.Mock).mockResolvedValue(testRefreshResponse);
-    // диспатчим экшен получения токенов
-    await store.dispatch(updateTokens());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toBeNull();
-    expect(state.accessToken).toEqual(testRefreshResponse.accessToken);
-    expect(state.refreshToken).toEqual(testRefreshResponse.refreshToken);
-    expect(state.isAuthenticated).toBe(true);
-    expect(state.error).toBeNull();
-    expect(state.isLoading).toBe(false);
+    const actualState = authSlice(
+      initialState,
+      updateTokens.fulfilled(testRefreshResponse, '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null,
+      accessToken: testRefreshResponse.accessToken,
+      refreshToken: testRefreshResponse.refreshToken
+    });
   });
 
   test('Проверка состояния при вызове updateTokens (rejected) и получении ошибки', async () => {
     (refreshToken as jest.Mock).mockRejectedValue(testError);
-    // диспатчим экшен получения токенов
-    await store.dispatch(updateTokens());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toBeNull();
-    expect(state.accessToken).toBeNull();
-    expect(state.refreshToken).toBeNull();
-    expect(state.isAuthenticated).toBe(false);
-    expect(state.error).toBe(testError);
-    expect(state.isLoading).toBe(false);
+    const actualState = authSlice(
+      initialState,
+      updateTokens.rejected(new Error(testError), '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isAuthenticated: false,
+      isLoading: false,
+      error: testError
+    });
   });
 
   test('Проверка состояния при вызове getUser (pending)', () => {
-    // диспатчим экшен получения пользователя
-    store.dispatch(getUser());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.error).toBeNull();
-    expect(state.isLoading).toBe(true);
+    const actualState = authSlice(initialState, getUser.pending(''));
+    expect(actualState).toEqual({
+      ...initialState,
+      isLoading: true,
+      error: null
+    });
   });
 
   test('Проверка состояния при вызове getUser (fulfilled)', async () => {
     (getUserApi as jest.Mock).mockResolvedValue(testAuthResponse);
-    // диспатчим экшен получения пользователя
-    await store.dispatch(getUser());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toEqual(testAuthResponse.user);
-    expect(state.accessToken).toBeNull();
-    expect(state.refreshToken).toBeNull();
-    expect(state.isAuthenticated).toBe(true);
-    expect(state.error).toBeNull();
-    expect(state.isLoading).toBe(false);
+
+    const actualState = authSlice(
+      initialState,
+      getUser.fulfilled(testUserResponse, '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      user: testAuthResponse.user,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null
+    });
   });
 
   test('Проверка состояния при вызове getUser (rejected) и получении ошибки', async () => {
     (getUserApi as jest.Mock).mockRejectedValue(testError);
-    // диспатчим экшен получения пользователя
-    await store.dispatch(getUser());
-    // получаем состояние хранилища
-    const state = store.getState();
-    // проверяем все поля переданного объекта с ожидаемым
-    expect(state.user).toBeNull();
-    expect(state.accessToken).toBeNull();
-    expect(state.refreshToken).toBeNull();
-    expect(state.isAuthenticated).toBe(false);
-    expect(state.error).toBe(testError);
-    expect(state.isLoading).toBe(false);
+    const actualState = authSlice(
+      initialState,
+      getUser.rejected(new Error(testError), '')
+    );
+    expect(actualState).toEqual({
+      ...initialState,
+      isAuthenticated: false,
+      isLoading: false,
+      error: testError
+    });
   });
 
   test('Проверка состояния при вызове редьюсера setUser', () => {
