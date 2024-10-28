@@ -1,4 +1,4 @@
-export const URL = process.env.BURGER_API_URL;
+export const URL = 'https://norma.nomoreparties.space/api';
 
 // создаем функцию проверки ответа на `ok`
 const checkResponse = async <T>(res: Response): Promise<TServerResponse<T>> =>
