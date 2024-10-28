@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from '../../services/store';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Preloader } from '../ui/preloader/preloader';
 import { useEffect } from 'react';
-import { updateTokens } from '../../slices/authSlice';
+import { updateTokens } from '../../slices/auth/authSlice';
 
 type ProtectedRouteProps = {
   onlyUnAuth?: boolean;
@@ -22,10 +22,10 @@ export const ProtectedRoute = ({
   // Проверка, если токен истёк — пробуем обновить токен (по refresh токену).
   useEffect(() => {
     const Token = localStorage.getItem('refreshToken');
-    if (!user && Token) {
+    if (!isAuthenticated && Token) {
       dispatch(updateTokens()); // Запрос на обновление токена
     }
-  }, [dispatch, user]);
+  }, [dispatch, isAuthenticated]);
 
   // Если идёт загрузка данных о пользователе, показываем прелоадер
   if (isLoading) {

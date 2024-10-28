@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TConstructorIngredient, TOrder } from '../utils/types';
+import { TConstructorIngredient, TOrder } from '../../utils/types';
 
 interface IConstructorItemsState {
   bun: TConstructorIngredient | null;
@@ -9,7 +9,7 @@ interface IConstructorItemsState {
   price: number;
 }
 // начальное состояние
-const initialState: IConstructorItemsState = {
+export const initialState: IConstructorItemsState = {
   bun: null,
   ingredients: [],
   orderRequest: false,

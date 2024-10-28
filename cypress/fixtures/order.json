@@ -1,0 +1,21 @@
+{
+    "success": true,
+    "orders": [
+        {
+            "_id": "67067ac113a2b7001c8f0ebd",
+            "ingredients": [
+                "643d69a5c3f7b9001cfa093d",
+                "643d69a5c3f7b9001cfa093e",
+                "643d69a5c3f7b9001cfa093e",
+                "643d69a5c3f7b9001cfa0940"
+            ],
+            "owner": "6704485513a2b7001c8f0930",
+            "status": "done",
+            "name": "Пробный бургерец",
+            "createdAt": "2024-10-09T12:44:49.240Z",
+            "updatedAt": "2024-10-09T12:44:50.018Z",
+            "number": 55555,
+            "__v": 0
+        }
+    ]
+}

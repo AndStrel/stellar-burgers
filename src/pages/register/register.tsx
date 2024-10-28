@@ -2,7 +2,7 @@ import { FC, SyntheticEvent, useState } from 'react';
 import { RegisterUI } from '@ui-pages';
 import { useNavigate } from 'react-router-dom';
 import { registerUserApi } from '../../utils/burger-api';
-import { setTokens, setUser } from '../../slices/authSlice';
+import { setTokens, setUser } from '../../slices/auth/authSlice';
 import { useDispatch } from '../../services/store';
 import { setCookie } from '../../utils/cookie';
 import { useForm } from '../../hooks/useForm';

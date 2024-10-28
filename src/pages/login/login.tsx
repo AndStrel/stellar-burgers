@@ -3,7 +3,7 @@ import { LoginUI } from '@ui-pages';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from '../../services/store';
 import { loginUserApi } from '../../utils/burger-api';
-import { setTokens, setUser } from '../../slices/authSlice';
+import { setTokens, setUser } from '../../slices/auth/authSlice';
 import { setCookie } from '../../utils/cookie';
 import { useForm } from '../../hooks/useForm';
 

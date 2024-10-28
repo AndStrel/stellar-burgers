@@ -1,7 +1,7 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
-import { updateUser } from '../../slices/authSlice';
+import { updateUser } from '../../slices/auth/authSlice';
 
 export const Profile: FC = () => {
   // берем из хранилища данные пользователя

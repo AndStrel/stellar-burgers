@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ProfileMenuUI } from '@ui';
 import { deleteCookie, getCookie } from '../../utils/cookie';
 import { useDispatch } from '../../services/store';
-import { logout } from '../../slices/authSlice';
+import { logout } from '../../slices/auth/authSlice';
 import { logoutApi } from '@api';
 
 export const ProfileMenu: FC = () => {
@@ -13,7 +13,6 @@ export const ProfileMenu: FC = () => {
 
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem('refreshToken') as string;
-    console.log(refreshToken);
     if (!refreshToken) {
       console.error('Refresh token is missing');
       return;

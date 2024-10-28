@@ -1,8 +1,8 @@
-import { getFeedsApi, getOrderByNumberApi } from '../utils/burger-api';
+import { getFeedsApi, getOrderByNumberApi } from '../../utils/burger-api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder, TOrdersData } from '@utils-types';
 
-const initialState: TOrdersData = {
+export const initialState: TOrdersData = {
   orders: [],
   total: 0,
   totalToday: 0,
@@ -46,14 +46,14 @@ export const ordersDataSlice = createSlice({
           }>
         ) => {
           state.isLoading = false;
-          state.orders = action.payload.orders;
-          state.total = action.payload.total;
-          state.totalToday = action.payload.totalToday;
+          state.orders = action.payload?.orders || [];
+          state.total = action.payload?.total || 0;
+          state.totalToday = action.payload?.totalToday || 0;
         }
       )
-      .addCase(fetchOrders.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(fetchOrders.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.error.message || 'Error';
       })
       .addCase(fetchOrderById.pending, (state) => {
         state.isLoading = true;
@@ -78,9 +78,9 @@ export const ordersDataSlice = createSlice({
           }
         }
       )
-      .addCase(fetchOrderById.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(fetchOrderById.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.error.message || 'Error';
       });
   }
 });
