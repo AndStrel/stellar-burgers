@@ -99,11 +99,12 @@
     "test": "jest",
     "cypress": "cypress open",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
     ]
-  }
+  },
+  "homepage": "https://AndStrel.github.io/stellar-burgers"
 }
